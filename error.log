@@ -1,0 +1,7 @@
+2024-04-19 20:47:30,190 - ERROR - An error occurred: 401: Invalid credentials
+2024-04-19 20:49:20,875 - ERROR - An error occurred: 401: Invalid username or password
+2024-04-19 20:51:45,276 - ERROR - An error occurred: 401: Invalid username or password
+2024-04-19 20:53:36,612 - ERROR - Database error occurred: current transaction is aborted, commands ignored until end of transaction block
+
+2024-04-19 20:53:50,157 - ERROR - Database error occurred: current transaction is aborted, commands ignored until end of transaction block
+
