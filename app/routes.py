@@ -49,3 +49,38 @@ async def login(user: User):
         print("inside exception 2")
         logging.error(f"An error occurred: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+        import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+
+
+
+@router.post("/forgot-password")
+async def forgot_password(user: User):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM users WHERE username = %s",
+            (user.username,)
+        )
+        result = cursor.fetchone()
+        if result:
+            # Update the password for the existing user
+            cursor.execute(
+                "UPDATE users SET password = %s WHERE username = %s",
+                (user.password, user.username)
+            )
+            conn.commit()
+            cursor.close()
+            return {"message": "Password updated successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+    except psycopg2.Error as e:
+        logging.error(f"Database error occurred: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    except Exception as e:
+        logging.error(f"An error occurred: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
