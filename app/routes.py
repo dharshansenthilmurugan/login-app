@@ -7,6 +7,8 @@ logging.basicConfig(level=logging.ERROR, filename="error.log", format="%(asctime
 
 
 router = APIRouter()
+# Define customer-related routes
+customer_router = APIRouter()
 
 @router.post("/register")
 async def register(user: User):
@@ -51,9 +53,6 @@ async def login(user: User):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-        import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 
 
@@ -84,3 +83,61 @@ async def forgot_password(user: User):
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@customer_router.post("/customers/create")
+async def create_customer(customer_id: int,customer_name: str, customer_address: str, customer_mobile: str, customer_email: str, is_active: bool):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO customers (customer_id,customer_name, customer_address, customer_mobile, customer_email, is_active) VALUES (%s, %s, %s, %s, %s)",
+            (customer_id,customer_name, customer_address, customer_mobile, customer_email, is_active)
+        )
+        conn.commit()
+        cursor.close()
+        return {"message": "Customer created successfully"}
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail="Database error occurred")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred")
+
+
+@customer_router.put("/customers/{customer_id}")
+async def update_customer(
+    customer_id: int,
+    customer_name: str,
+    customer_address: str,
+    customer_mobile: str,
+    customer_email: str,
+    is_active: bool
+):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE customers SET customer_name = %s, customer_address = %s, customer_mobile = %s, customer_email = %s, is_active = %s WHERE customer_id = %s",
+            (customer_name, customer_address, customer_mobile, customer_email, is_active, customer_id)
+        )
+        conn.commit()
+        cursor.close()
+        return {"message": "Customer updated successfully"}
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail="Database error occurred")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred")
+
+
+@customer_router.delete("/customers/{customer_id}")
+async def delete_customer(customer_id: int):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "DELETE FROM customers WHERE customer_id = %s",
+            (customer_id,)
+        )
+        conn.commit()
+        cursor.close()
+        return {"message": "Customer deleted successfully"}
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail="Database error occurred")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred")
