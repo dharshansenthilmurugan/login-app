@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 from app.models import Customer
-from app.database import execute_query, fetch_one
+from app.database import execute_query, fetch_one, fetch_all
 
 router = APIRouter()
 
@@ -40,5 +40,16 @@ async def delete_customer(customer_id: int):
     try:
         await execute_query(query, customer_id)
         return {"message": "Customer deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
+@router.get("/read_all")
+async def read_all_customers():
+    query = """
+        SELECT * FROM customers
+    """
+    try:
+        customers = await fetch_all(query)
+        return customers
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")

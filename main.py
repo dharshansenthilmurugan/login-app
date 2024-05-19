@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from app.user_routes import router as user_router
 from app.customer_routes import router as customer_router
 from app.database import create_pool, close_pool
+from app.manufacturing_routes import router as manufacturing_router
 
 app = FastAPI()
 
@@ -12,6 +13,9 @@ app.include_router(user_router, prefix="/users")
 
 # Include the customer router
 app.include_router(customer_router, prefix="/customers")
+
+# Include the customer router
+app.include_router(manufacturing_router, prefix="/manufacture")
 
 # Create the database connection pool
 @app.on_event("startup")
