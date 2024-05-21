@@ -1,7 +1,7 @@
-from pydantic import BaseModel, EmailStr , Json
-from datetime import datetime
 from datetime import datetime
 from pytz import timezone, UTC
+from pydantic import BaseModel, EmailStr, Field
+from typing import List
 
 
 class User(BaseModel):
@@ -42,3 +42,34 @@ class MaintenanceSchedule(BaseModel):
     machine_id : int
     scheduled_date : datetime
     description : str
+
+
+class Suppliers(BaseModel):
+    supplier_id: int
+    supplier_name: str
+    supplier_email: EmailStr
+    supplier_phone: str = None
+    supplier_address: str = None
+
+class SupplierProduct(BaseModel):
+    product_id: int
+    supplier_id: int
+    product_name: str
+    product_description: str = None
+    price: float
+
+class Order(BaseModel):
+    order_id: int
+    supplier_id: int
+    product_id: int
+    quantity: int
+    order_date: str
+    delivery_date: str
+
+class DeliverySchedule(BaseModel):
+    delivery_id: int
+    order_id: int
+    supplier_id: int
+    delivery_date: str
+    status: str
+
