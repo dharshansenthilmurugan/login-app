@@ -30,6 +30,20 @@ async def execute_query(query, *args):
             print("else result ", result)
             return result
 
+# async def execute_query(query: str, args: list):
+#     print("inside execute query")
+#     async with pool.acquire() as conn:
+#         if query.strip().lower().startswith('select'):
+#             print("inside if ")
+#             # If the query is a SELECT query, fetch and return the rows
+#             result = await conn.fetch(query, *args)
+#             print("result ", result)
+#             return result
+#         else:
+#             # For other types of queries, execute the query and return the execution status
+#             result = await conn.execute(query, *args)
+#             print("else result ", result)
+#             return result
 
 # Function to fetch one row from the result of a query
 async def fetch_one(query, *args):

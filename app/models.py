@@ -72,4 +72,3 @@ class DeliverySchedule(BaseModel):
     supplier_id: int
     delivery_date: str
     status: str
-

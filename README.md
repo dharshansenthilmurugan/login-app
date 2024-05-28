@@ -45,8 +45,8 @@ To run the FastAPI application locally, use the following command:
 uvicorn main:app --reload
 ```
 
-#### PostgreSQL
-##### Database Setup
+## PostgreSQL
+### Database Setup
 - **Create Database**: Create a PostgreSQL database named my_project1_db.
 
 ##### Database Tables

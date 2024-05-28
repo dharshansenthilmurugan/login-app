@@ -1,6 +1,10 @@
-from fastapi import APIRouter, HTTPException
-from app.models import Suppliers,SupplierProduct, Order, DeliverySchedule,SupplierWithProducts
+from fastapi import APIRouter, HTTPException, Body
+from app.models import Suppliers,SupplierProduct, Order, DeliverySchedule
 from app.database import execute_query, fetch_one, fetch_all
+from typing import List
+from pydantic import BaseModel
+import asyncpg
+
 
 router = APIRouter()
 
@@ -358,27 +362,27 @@ async def delete_deliveryschedule(delivery_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
+class BulkDeleteRequest(BaseModel):
+    supplier_ids: List[int]
 
-@router.post("/suppliers/supplierwithproducts")
-async def create_supplier_with_products(supplier_with_products: SupplierWithProducts):
-    print("inside function")
-    supplier = supplier_with_products.supplier
-    products = supplier_with_products.products
+
+@router.delete("/suppliers/bulk_delete")
+async def delete_bulk_suppliers(request: BulkDeleteRequest):
+    supplier_ids = request.supplier_ids
+    print("Received supplier IDs:", supplier_ids)  # Add this print statement
+    
+    # Construct a dynamic SQL query with parameterized placeholders
+    query = """
+        DELETE FROM suppliers
+        WHERE supplier_id = ANY($1::int[])
+    """
+    
     try:
-        async with database.transaction():
-            supplier_query = """
-                INSERT INTO suppliers (supplier_id, name, address)
-                VALUES ($1, $2, $3)
-            """
-            await execute_query(supplier_query, supplier.supplier_id, supplier.name, supplier.address)
-
-            for product in products:
-                product_query = """
-                    INSERT INTO supplier_products (supplier_id, product_id, price)
-                    VALUES ($1, $2, $3)
-                """
-                await execute_query(product_query, supplier.supplier_id, product.product_id, product.price)
-
-        return {"message": "Supplier with products created successfully"}
+        # Ensure supplier_ids is passed as a list or tuple
+        await execute_query(query, [supplier_ids])
+        return {"message": "Suppliers deleted successfully"}
+    except asyncpg.exceptions.DataError as e:
+        raise HTTPException(status_code=400, detail="Invalid data provided: " + str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
